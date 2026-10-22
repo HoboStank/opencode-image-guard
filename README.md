@@ -1,34 +1,48 @@
-# OpenCode Image Guard
+<img src="assets/hero.svg" alt="Image Guard - keep long OpenCode sessions under the image limit" width="100%" />
 
-[![Test](https://github.com/HoboStank/opencode-image-guard/actions/workflows/test.yml/badge.svg)](https://github.com/HoboStank/opencode-image-guard/actions/workflows/test.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![OpenCode V2](https://img.shields.io/badge/OpenCode-V2-111827)](https://opencode.ai/v2/docs/)
+# Image Guard
 
-A small OpenCode V2 plugin that keeps long sessions working when a provider caps the number of images per request.
+**A session shouldn't die because a screenshot got old.**
 
-If you have seen this error:
+OpenCode replays the conversation on every turn. Attach enough screenshots and the provider eventually refuses the whole request:
 
 ```text
 Upstream request failed: [invalid_request_error]
 Too many images in request: 39 > 30
 ```
 
-...the limit is enforced by the provider, not by OpenCode, and there is no config field that raises it. Every request replays the conversation, so once a session accumulates too many screenshots, every new turn fails.
+There is no setting to raise that cap. Image Guard keeps the newest images and replaces the older ones in the outgoing request, so the session keeps moving.
 
-This plugin fixes that by keeping the newest images and omitting older ones from the outgoing request only.
+[![tests](https://img.shields.io/github/actions/workflow/status/HoboStank/opencode-image-guard/test.yml?branch=main&style=flat-square&label=tests&color=f36932&labelColor=20211f)](https://github.com/HoboStank/opencode-image-guard/actions/workflows/test.yml)
+[![license](https://img.shields.io/badge/license-MIT-f36932?style=flat-square&labelColor=20211f)](LICENSE)
+[![OpenCode](https://img.shields.io/badge/OpenCode-V2-f36932?style=flat-square&labelColor=20211f)](https://opencode.ai/v2/docs/)
+
+[Install](#install) · [How it works](#how-it-works) · [Options](#options) · [Good to know](#good-to-know) · [Development](#development)
+
+---
+
+## Why this exists
+
+Most providers cap how many images a single request can carry. OpenCode sends the whole session every time, so a long chat with screenshots slowly walks into that ceiling. Once it does, every new turn fails before the model even sees it.
+
+Deleting screenshots by hand works until it doesn't. Starting over loses the thread. Image Guard is the small, boring fix: keep the newest images, drop the oldest ones from the request, and leave the session alone.
+
+<img src="assets/flow.svg" alt="39 images in session history become 24 in the outgoing request, and the provider accepts it" width="100%" />
 
 ## How it works
 
-- Registers the V2 `session.hook("context")`, `"compaction"`, and `"title"` hooks.
-- Walks the assembled messages from newest to oldest.
-- Keeps the newest `maxImages` image parts (`media` parts with an `image/*` media type).
-- Replaces older image parts with a short text marker.
-- Leaves persisted session history and the images on disk untouched.
-- Never blocks a request if pruning itself fails.
+1. OpenCode assembles the messages for a model request.
+2. Image Guard counts image parts from newest to oldest.
+3. The newest `maxImages` stay.
+4. Older image parts become a short text marker:
+   `[an older image was omitted from this request to stay within the model's image limit]`
+5. The request goes out under the cap.
+
+Only the outgoing request changes. The session still shows every original image, and nothing is deleted from disk.
 
 ## Install
 
-Clone the repository into your OpenCode plugins directory:
+Clone it into your OpenCode plugins directory:
 
 ```bash
 git clone https://github.com/HoboStank/opencode-image-guard.git \
@@ -42,7 +56,7 @@ git clone https://github.com/HoboStank/opencode-image-guard.git `
   "$env:USERPROFILE\.config\opencode\plugins\image-guard"
 ```
 
-Add the plugin to `opencode.json` (or `opencode.jsonc`):
+Add it to `opencode.json` (or `opencode.jsonc`):
 
 ```jsonc
 {
@@ -58,61 +72,42 @@ Add the plugin to `opencode.json` (or `opencode.jsonc`):
 }
 ```
 
-Use forward slashes or escaped backslashes in JSON. Restart OpenCode after adding the plugin.
-
-If you only want the defaults, the string form is enough:
-
-```jsonc
-{
-  "plugins": ["C:\\Users\\you\\.config\\opencode\\plugins\\image-guard"]
-}
-```
+Restart OpenCode. The defaults are already useful; the object form is only needed when you want to tune it.
 
 ## Options
 
-| Option       | Default          | Description                                                                 |
-| ------------ | ---------------- | --------------------------------------------------------------------------- |
-| `maxImages`  | `24`             | Image parts kept per request. `0` disables the guard.                       |
-| `providerID` | `"opencode-go"`  | Provider to guard. Set to `false` to apply to every provider.               |
-| `debug`      | `false`          | Log pruning decisions through `console.error` (visible in OpenCode logs).   |
+| Option | Default | What it does |
+| --- | --- | --- |
+| `maxImages` | `24` | Image parts kept per request. `0` disables the guard. |
+| `providerID` | `"opencode-go"` | Only guard this provider. Set `false` for every provider. |
+| `debug` | `false` | Log pruning decisions through `console.error`. |
 
-The provider limit observed with OpenCode Go is **30 images per request**, so `29` is the highest useful value. The default of `24` leaves headroom for provider-side counting differences.
+The OpenCode Go cap is **30 images per request**, so `29` is the highest useful value. The default of `24` leaves headroom for provider-side counting differences.
 
-## Behavior
+## Good to know
 
-- The newest images always survive. Older ones are replaced with:
-
-  ```text
-  [an older image was omitted from this request to stay within the model's image limit]
-  ```
-
-- Images are counted across all message content, including images returned by tools.
-- If a single message contains more than `maxImages` images, that message's oldest images are omitted first.
-- Only the outgoing request is changed. Reopening the session still shows every original image.
-
-## Compatibility
-
-- OpenCode **V2**, tested with **2.1.2**.
-- Any provider that enforces an image-count limit. The default scope is `opencode-go`; set `providerID: false` for others.
-
-## Troubleshooting
-
-**The error still appears.** Confirm the plugin is enabled for the provider you are using. If you use a provider other than `opencode-go`, set `"providerID": false` or the provider's ID. Then start a new turn so a fresh request is assembled.
-
-**The model cannot see an old screenshot.** That is the trade-off. Re-attach the screenshot, or raise `maxImages` (up to `29` for a 30-image cap).
-
-**Nothing is logged.** Set `"debug": true` and check the OpenCode server log (`~/.local/share/opencode/log/opencode.log`).
+- The newest images always survive. Older ones are replaced, never silently deleted from history.
+- Images returned by tools count too.
+- If one message carries more than `maxImages` images, that message's oldest images go first.
+- A pruning failure is logged (with `debug`) and never blocks the request.
+- The plugin is scoped to `opencode-go` by default. If your provider has a different limit, change `providerID` or set it to `false`.
 
 ## Development
 
-Requires [Bun](https://bun.sh/). There is no build step; OpenCode loads the TypeScript directly.
+Requires [Bun](https://bun.sh/). OpenCode loads the TypeScript directly; there is no build step.
 
 ```bash
 bun test
 ```
 
-The tests cover image-part detection, counting, pruning order, and no-op behavior.
+The tests cover image detection, counting, pruning order, shape preservation, and option normalization.
 
 ## License
 
 MIT. Not affiliated with OpenCode.
+
+---
+
+<p align="center">
+  <sub>Built by <a href="https://www.madebyhobo.com">madebyhobo</a> · <a href="https://x.com/HoebenChris">@HoebenChris</a></sub>
+</p>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
+  <title id="title">Image Guard - keep long OpenCode sessions under the image limit</title>
+  <desc id="desc">A charcoal, ivory and orange banner. Angular corner marks frame Image Guard: keep the session under the limit. Made by hobo.</desc>
+  <rect width="1200" height="480" fill="#20211f"/>
+  <path d="M0 0h1200v12H0zM0 468h1200v12H0z" fill="#f36932"/>
+  <path d="M48 52h54v8H56v46h-8zM1152 428h-54v-8h46v-46h8z" fill="#f3efdf"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#f3efdf">
+    <text x="86" y="107" font-size="26" font-weight="700" letter-spacing="5">MADEBYHOBO / TOOLS</text>
+    <text x="80" y="245" font-size="106" font-weight="900" letter-spacing="-6">IMAGE GUARD</text>
+    <text x="86" y="308" font-size="34">Keep the session under the limit.</text>
+    <text x="86" y="406" font-size="23" letter-spacing="3">NEWEST IMAGES IN. OLD ONES OUT.</text>
+  </g>
+  <g transform="translate(950 150) scale(0.82)" fill="none" stroke-linejoin="miter">
+    <rect x="0" y="0" width="150" height="115" stroke="#f3efdf" stroke-opacity="0.35" stroke-width="10"/>
+    <rect x="28" y="28" width="150" height="115" stroke="#f3efdf" stroke-opacity="0.6" stroke-width="10"/>
+    <rect x="56" y="56" width="150" height="115" stroke="#f36932" stroke-width="12"/>
+    <circle cx="96" cy="96" r="11" stroke="#f3efdf" stroke-width="8"/>
+    <path d="M66 158l34-34 30 30 24-24 32 32" stroke="#f36932" stroke-width="10"/>
+  </g>
+</svg>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="340" viewBox="0 0 1200 340" role="img" aria-labelledby="title desc">
+  <title id="title">How Image Guard edits a request</title>
+  <desc id="desc">A diagram showing 39 images in session history, 24 newest kept in the outgoing request, and the provider accepting the request.</desc>
+  <rect width="1200" height="340" fill="#f3efdf"/>
+  <path d="M0 0h1200v10H0zM0 330h1200v10H0z" fill="#f36932"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#20211f">
+    <text x="60" y="72" font-size="22" font-weight="700" letter-spacing="4">WHAT HAPPENS ON EACH TURN</text>
+    <text x="60" y="100" font-size="16" opacity="0.7">OpenCode replays the session. Image Guard edits only the outgoing request.</text>
+  </g>
+
+  <g font-family="Arial, Helvetica, sans-serif" fill="#20211f">
+    <rect x="60" y="125" width="300" height="150" fill="#faf8ee" stroke="#20211f" stroke-width="3"/>
+    <text x="84" y="158" font-size="14" font-weight="700" letter-spacing="2.5" opacity="0.65">SESSION HISTORY</text>
+    <text x="84" y="222" font-size="56" font-weight="900">39</text>
+    <text x="170" y="222" font-size="20">images</text>
+    <text x="84" y="254" font-size="15" opacity="0.7">screenshots pile up</text>
+
+    <rect x="460" y="125" width="340" height="150" fill="#faf8ee" stroke="#20211f" stroke-width="3"/>
+    <text x="484" y="158" font-size="14" font-weight="700" letter-spacing="2.5" opacity="0.65">OUTGOING REQUEST</text>
+    <text x="484" y="222" font-size="56" font-weight="900" fill="#f36932">24</text>
+    <text x="572" y="222" font-size="20">newest kept</text>
+    <text x="484" y="254" font-size="15" opacity="0.7">15 oldest replaced with a marker</text>
+
+    <rect x="900" y="125" width="240" height="150" fill="#faf8ee" stroke="#20211f" stroke-width="3"/>
+    <text x="924" y="158" font-size="14" font-weight="700" letter-spacing="2.5" opacity="0.65">PROVIDER</text>
+    <path d="M926 207l14 14 26-30" fill="none" stroke="#f36932" stroke-width="10" stroke-linecap="square"/>
+    <text x="980" y="222" font-size="28" font-weight="700">accepted</text>
+    <text x="924" y="254" font-size="15" opacity="0.7">no more 39 &gt; 30</text>
+  </g>
+
+  <g stroke="#f36932" stroke-width="6" fill="none">
+    <path d="M380 200h56"/>
+    <path d="M820 200h56"/>
+  </g>
+  <path d="M442 200l-16-10v20zM882 200l-16-10v20z" fill="#f36932"/>
+</svg>
