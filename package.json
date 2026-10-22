@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "opencode-image-guard",
+  "version": "0.1.0",
+  "description": "OpenCode V2 plugin that keeps model requests under provider image-count limits by omitting the oldest images.",
+  "type": "module",
+  "main": "index.ts",
+  "exports": {
+    ".": "./index.ts"
+  },
+  "files": [
+    "index.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "opencode",
+    "opencode-plugin",
+    "opencode-v2",
+    "image-limit",
+    "vision"
+  ],
+  "license": "MIT",
+  "author": "HoboStank",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HoboStank/opencode-image-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HoboStank/opencode-image-guard/issues"
+  },
+  "homepage": "https://github.com/HoboStank/opencode-image-guard#readme",
+  "scripts": {
+    "test": "bun test"
+  },
+  "engines": {
+    "bun": ">=1.1.0"
+  }
+}
